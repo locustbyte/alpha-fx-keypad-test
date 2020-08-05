@@ -1,4 +1,4 @@
-# AlphaFX Keypad Text
+# AlphaFX Keypad Test
 
 App start points:
 
