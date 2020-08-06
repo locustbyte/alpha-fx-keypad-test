@@ -6,7 +6,8 @@ class App extends Component {
     constructor(props){
         super();
         this.state = {
-            result: ""
+            result: "",
+            showHideFName: true
         }
     }
 

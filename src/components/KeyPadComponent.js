@@ -47,6 +47,7 @@ function bindPinToDisplay(pinArray, pinStatus) {
 }
 
 function evaluatePin(pinArray) {
+  
   const enteredPin = pinArray.join("");
   if (enteredPin === correctPin) {
     disableInput = true;
@@ -165,6 +166,14 @@ class KeyPadComponent extends Component {
     document.removeEventListener("keydown", this.escFunction, false);
   }
   render() {
+    let {isLoggedIn} = this.state;
+    const renderValidMessage = ()=>{
+      if(isLoggedIn){
+        return <div>Incorrect Entry</div>
+      } else{
+        
+      }
+    }
     return <div className="device">
         <div className="device-bezel">
           <div className="device-viewport">
@@ -208,6 +217,7 @@ class KeyPadComponent extends Component {
                     </g>
                   </svg>
                 </div>
+                {renderValidMessage()}
                 <div className="keypad">
                   <div className="keypad--row">
                     <div className="keypad--button" onClick={handleClick} data-value="1">
