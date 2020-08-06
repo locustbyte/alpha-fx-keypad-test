@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import './app.css';
+import './app.scss';
 import KeyPadComponent from "./components/KeyPadComponent";
 
 class App extends Component {
-    constructor(){
+    constructor(props){
         super();
-
         this.state = {
             result: ""
         }
@@ -14,7 +13,7 @@ class App extends Component {
     render() {
         return (
             <div>
-                <div className="code-zero">
+                <div className="main-app--base">
                     <KeyPadComponent onClick={this.onClick}/>
                 </div>
             </div>

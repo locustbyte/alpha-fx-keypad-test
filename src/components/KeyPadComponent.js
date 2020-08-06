@@ -2,48 +2,20 @@ import React, { Component } from "react";
 import { Button } from "react-bootstrap";
 
 const correctPin = "0000";
+let enteredValue = "";
 let disableInput = false;
 let _pinArray = [];
 
-function handleKeyPress(event) {
-  console.log(event) 
-  if(event.key === 'Enter'){
-    console.log('enter press here! ')
-  }
-}
-
+// Reset everything and set 
 function lockApp() {
   document.querySelector(".pin-info").style.top = "0";
   document.querySelector(".pin-display").style.bottom = "0";
-  //closeLock().then(() => {
   disableInput = false;
   _pinArray = [];
   bindPinToDisplay(_pinArray);
-  // });
 }
 
-function closeLock() {
-  const topSection = document.querySelector(".pin-info");
-  const bottomSection = document.querySelector(".pin-display");
-  document.querySelector(".pin-info").style.top = "0";
-  document.querySelector(".pin-display").style.bottom = "0";
-  // const promises = [
-  //   anime({
-  //     targets: bottomSection,
-  //     translateY: "0%",
-  //     duration: 600,
-  //     easing: "easeOutCubic"
-  //   }).finished,
-  //   anime({
-  //     targets: topSection,
-  //     translateY: "0%",
-  //     duration: 600,
-  //     easing: "easeOutCubic"
-  //   }).finished
-  // ];
-
-  // return Promise.all(promises);
-}
+// Handle the UI on successful entry  
 function openLock() {
   const containerHeight = document.querySelector(".container").offsetHeight;
   const keypadHeight = document.querySelector(".pin-display").offsetHeight;
@@ -100,13 +72,14 @@ function evaluatePin(pinArray) {
 
 function init() {
   initLayout();
+  
 }
 
-//need to revise
 setTimeout(() => {
   init();
 }, 0);
 
+// Function to handle clearing of input
 function handleClearAll() {
   if (disableInput) {
     return;
@@ -115,6 +88,7 @@ function handleClearAll() {
   bindPinToDisplay(_pinArray);
 }
 
+// Function to handle clearing of input
 function handleClear() {
   if (disableInput) {
     return;
@@ -123,21 +97,29 @@ function handleClear() {
   bindPinToDisplay(_pinArray);
 }
 
+//Function to attempt pin unlock
 function attemptUnlock() {
   if (_pinArray.length === 4) {
     evaluatePin(_pinArray);
   }
 }
 
-function handleClick(e) {
-  e.preventDefault();
-  const value = e.target.attributes["data-value"].value;
+// Function to handle event click on keypad
+function handleClick(e, t) {
+
+
+  // Check if keyboard input and set value equal to input string
+  if (t == "keyboard") {
+    enteredValue = e.key;
+  } else {
+    enteredValue = e.target.attributes["data-value"].value;
+  }
+
   if (_pinArray.length < 4) {
-    _pinArray.push(value);
+    _pinArray.push(enteredValue);
     bindPinToDisplay(_pinArray);
 
     /* IF WE WANTED TO AUTOMATICALLY ATTEMPT AN UNLOCK WHEN 4 DIGITS ARE ENTERED WE COULD USE THE BELOW */
-    
     // if (_pinArray.length === 4) {
     //   evaluatePin(_pinArray);
     // }
@@ -152,24 +134,48 @@ function initLayout() {
     1}px`;
 }
 
-/* END TRUE FUNCTIONS */
-
 class KeyPadComponent extends Component {
+  constructor(props) {
+    super(props);
+    this.escFunction = this.escFunction.bind(this);
+
+    this.state = {
+      result: ""
+    }
+  }
+
+  escFunction(event) {
+    handleClick(event, "keyboard")
+
+    //Escape key clears all
+    if (event.keyCode === 27) {
+      handleClearAll();
+    }
+
+    //Enter key attempts unlock
+    if (event.keyCode === 13) {
+      attemptUnlock();
+    }
+  }
+
+  componentDidMount() {
+    document.addEventListener("keydown", this.escFunction, false);
+  }
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this.escFunction, false);
+  }
   render() {
-    return (
-      <div className="device">
+    return <div className="device">
         <div className="device-bezel">
           <div className="device-viewport">
             <div className="content">
-              <img
-                alt="header"
-                src="https://i.pinimg.com/originals/f6/94/4e/f6944e111801a75f884f8ad72684e387.jpg"
-              />
+              <img alt="header" src="https://i.pinimg.com/originals/f6/94/4e/f6944e111801a75f884f8ad72684e387.jpg" />
               <div className="body-content">
                 <h1>ACCESS!</h1>
                 <h3>It's good to see you!</h3>
                 <p>
-                  Your life just got a little more enriched for gaining access.
+                  Your life just got a little more enriched for gaining
+                  access.
                 </p>
                 <button id="reset-button" onClick={lockApp}>
                   Lock App!
@@ -179,6 +185,12 @@ class KeyPadComponent extends Component {
             <div className="container">
               <div className="pin-info">
                 <h1 className="page-title">Alpha FX Access</h1>
+                <small>Code is 0000</small>
+                
+                <video width="400"  autoPlay="0" muted controls="0">
+                <source id="alphavideo" src="http://mollify.an0rak.co.uk/bgvid.mp4" type="video/mp4"></source>
+                Your browser does not support HTML video.
+                </video>
               </div>
               <div className="pin-display">
                 <div className="circle-lock--container">
@@ -198,93 +210,46 @@ class KeyPadComponent extends Component {
                 </div>
                 <div className="keypad">
                   <div className="keypad--row">
-                    <div
-                      className="keypad--button"
-                      onClick={handleClick}
-                      onKeyPress={handleKeyPress}
-                      data-value="1"
-                    >
+                    <div className="keypad--button" onClick={handleClick} data-value="1">
                       1
                     </div>
-                    <div
-                      className="keypad--button"
-                      onClick={handleClick}
-                      data-value="2"
-                    >
+                    <div className="keypad--button" onClick={handleClick} data-value="2">
                       2
                     </div>
-                    <div
-                      className="keypad--button"
-                      onClick={handleClick}
-                      data-value="3"
-                    >
+                    <div className="keypad--button" onClick={handleClick} data-value="3">
                       3
                     </div>
                   </div>
                   <div className="keypad--row">
-                    <div
-                      className="keypad--button"
-                      onClick={handleClick}
-                      data-value="4"
-                    >
+                    <div className="keypad--button" onClick={handleClick} data-value="4">
                       4
                     </div>
-                    <div
-                      className="keypad--button"
-                      onClick={handleClick}
-                      data-value="5"
-                    >
+                    <div className="keypad--button" onClick={handleClick} data-value="5">
                       5
                     </div>
-                    <div
-                      className="keypad--button"
-                      onClick={handleClick}
-                      data-value="6"
-                    >
+                    <div className="keypad--button" onClick={handleClick} data-value="6">
                       6
                     </div>
                   </div>
                   <div className="keypad--row">
-                    <div
-                      className="keypad--button"
-                      onClick={handleClick}
-                      data-value="7"
-                    >
+                    <div className="keypad--button" onClick={handleClick} data-value="7">
                       7
                     </div>
-                    <div
-                      className="keypad--button"
-                      onClick={handleClick}
-                      data-value="8"
-                    >
+                    <div className="keypad--button" onClick={handleClick} data-value="8">
                       8
                     </div>
-                    <div
-                      className="keypad--button"
-                      onClick={handleClick}
-                      data-value="9"
-                    >
+                    <div className="keypad--button" onClick={handleClick} data-value="9">
                       9
                     </div>
                   </div>
                   <div className="keypad--row">
-                    <div
-                      className="keypad--button keyboard--button__back-arrow"
-                      onClick={handleClear}
-                    >
+                    <div className="keypad--button keyboard--button__back-arrow" onClick={handleClear}>
                       <i className="material-icons">backspace</i>
                     </div>
-                    <div
-                      className="keypad--button"
-                      onClick={handleClick}
-                      data-value="0"
-                    >
+                    <div className="keypad--button" onClick={handleClick} data-value="0">
                       0
                     </div>
-                    <div
-                      className="keypad--button keyboard--button__x"
-                      onClick={handleClearAll}
-                    >
+                    <div className="keypad--button keyboard--button__x" onClick={handleClearAll}>
                       <i className="material-icons">clear</i>
                     </div>
                   </div>
@@ -300,8 +265,7 @@ class KeyPadComponent extends Component {
             </div>
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
 }
 
